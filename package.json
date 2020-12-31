@@ -1,19 +1,25 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Preply Clone Application",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "client": "cd ../client && npm run start",
+    "lint": "eslint --fix .",
+    "lint-check": "eslint .",
+    "dev": "concurrently \"npm run start\" \"npm run client\""
   },
   "keywords": [],
-  "author": "",
+  "author": "Mert Efe",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "date-and-time": "^0.14.2",
     "dotenv": "^8.2.0",
+    "eslint-config-airbnb-base": "^14.2.1",
     "express": "^4.17.1",
     "mongoose": "^5.11.9",
     "nodemailer": "^6.4.17",
@@ -21,5 +27,11 @@
     "nodemon": "^2.0.6",
     "uuidv4": "^6.2.6",
     "validator": "^13.5.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.16.0",
+    "eslint-config-prettier": "^7.1.0",
+    "eslint-plugin-prettier": "^3.3.0",
+    "prettier": "^2.2.1"
   }
 }
