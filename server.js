@@ -5,7 +5,6 @@ const studentRoute = require("./routes/student");
 const tutorRoute = require("./routes/tutor");
 require("dotenv").config();
 
-console.log(process.env.ATLAS_URI);
 const app = express();
 
 app.use(express.json());
@@ -13,7 +12,7 @@ app.use(cors());
 app.use("/students", studentRoute);
 app.use("/tutors", tutorRoute);
 
-const { connection } = mongoose;
+const connection = mongoose.connection;
 
 connection.once("open", () => {
   console.log("MongoDB connection has been established.");
