@@ -4,7 +4,7 @@ const Student = require("../models/student");
 const { sendForgotEmail, sendWelcomeEmail, sendVerificationEmail } = require("../utils/account");
 
 router.get("/", async (req, res) => {
-  const students = Student.find({});
+  const students = await Student.find({});
 
   if (!students) {
     return res.status(400).send({ msg: "Students not found. " });

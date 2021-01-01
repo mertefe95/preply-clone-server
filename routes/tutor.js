@@ -1,10 +1,15 @@
 const express = require("express");
 const Tutor = require("../models/tutor");
-
+const validator = require('validator');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
+require('dotenv').config();
+
+
 
 router.get("/", async (req, res) => {
-  const tutors = Tutor.find({});
+  const tutors = await Tutor.find({});
 
   if (!tutors) {
     return res.status(400).send({ msg: "No tutors found." });
@@ -23,7 +28,7 @@ router.get("/:id", async (req, res) => {
   return res.status(200).send(tutor);
 });
 
-router.get('/register', async (req, res) => {
+router.post('/register', async (req, res) => {
   const { email, password } = req.body; 
 
   const digit = /^(?=.*\d)/
@@ -52,12 +57,12 @@ router.get('/register', async (req, res) => {
   } else if (!upperLetter.test(password)) {
     return res
       .status(400)
-      .send({ msg: "Please enter an at least one upper letter in your password." })
+      .send({ msg: "Please enter an at least one uppercase letter in your password." })
   }
 
   try {
-    const tutorExistsByEmail = Tutor.findOne({ email: email })
-    if (!tutorExistsByEmail) {
+    const tutorExistsByEmail = await Tutor.findOne({ email: email })
+    if (tutorExistsByEmail) {
       return res
         .status(400)
         .send({ msg: "Tutor with this email already existing." })
@@ -72,17 +77,16 @@ router.get('/register', async (req, res) => {
     }
 
     const registerTutor = new Tutor(newTutor)
-    registerTutor.save();
+    await registerTutor.save();
 
-    const token = await jwt.sign({ id: user.id }, process.env.SECRET_TOKEN)
+    const token = await jwt.sign({ id: registerTutor._id }, process.env.SECRET_TOKEN)
 
     return res
       .status(200)
       .json({ token,
         user: {
-          id: user._id,
-          username: user.username,
-          email: user.email
+          id: registerTutor._id,
+          email: registerTutor.email
         }
       })
   } catch (e) {
@@ -92,7 +96,7 @@ router.get('/register', async (req, res) => {
   }
 })
 
-router.get('/login', async (req, res) => {
+router.post('/login', async (req, res) => {
   const { email, password } = req.body
 
   if (!email) {
@@ -122,6 +126,20 @@ router.get('/login', async (req, res) => {
         .send({ msg: "Wrong Password." })
     }
 
+    const token = await jwt.sign({ id: loginTutor.id}, process.env.SECRET_TOKEN)
+
+    return res
+      .status(200)
+      .send({ token,
+      user: {
+        id: loginTutor._id,
+        email: loginTutor.email
+      }})
+
+  } catch (e) {
+    return res  
+      .status(500)
+      .send(e)
   }
 
 })
